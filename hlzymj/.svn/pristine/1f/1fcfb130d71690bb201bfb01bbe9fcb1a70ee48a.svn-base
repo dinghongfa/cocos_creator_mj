@@ -1,0 +1,7 @@
+{
+  "ver": "1.0.0",
+  "uuid": "e99bf9a6-963e-4c68-b0fb-f6f3cb6de802",
+  "atlasJson": "{\"width\":512,\"SubTexture\":[{\"width\":137,\"y\":1,\"height\":137,\"name\":\"mengban_black\",\"x\":143},{\"width\":80,\"y\":140,\"height\":82,\"name\":\"jiazai_majiangzi\",\"x\":143},{\"width\":140,\"y\":1,\"height\":140,\"name\":\"quan\",\"x\":1}],\"height\":256,\"name\":\"jiazai\",\"imagePath\":\"jiazai_tex.png\"}",
+  "texture": "c66618f6-6dcf-4d30-9e7b-38c171949896",
+  "subMetas": {}
+}

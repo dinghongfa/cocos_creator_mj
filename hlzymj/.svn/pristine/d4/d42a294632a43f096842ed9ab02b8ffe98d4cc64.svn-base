@@ -1,0 +1,14 @@
+cc.Class({
+    extends: cc.Component,
+    properties: {
+    },
+
+    onLoad:function() {
+        // cc.director.preloadScene('LoginScene');
+        // var action = cc.delayTime(1);//cc.fadeOut(1.5);
+        // var func = cc.callFunc(function(){
+        //     cc.director.loadScene('LoginScene');
+        // });
+        // this.node.runAction(cc.sequence(action,func))
+    },
+});

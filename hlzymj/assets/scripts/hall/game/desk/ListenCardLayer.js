@@ -20,7 +20,7 @@ cc.Class({
     onLoad: function () {
 
         // var self = this;
-        // cc.loader.loadRes("game/tips/listen_blue", cc.Atlas, function (error, font) {
+        // cc.loader.loadRes("texture/game/tips/listen_blue", cc.Atlas, function (error, font) {
         //     self.m_listenFont = font;
 
         //     this.reloadUI();

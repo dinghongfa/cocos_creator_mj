@@ -1,0 +1,31 @@
+var AladinSDK = require("../aladinSDK");
+cc.Class({
+    extends: cc.Component,
+
+    properties: {
+    },
+
+    onLoad () {
+        var windowSize = cc.view.getVisibleSize();
+
+            this.node.width = windowSize.width;
+            this.node.height = windowSize.height;
+    },
+
+
+    // 点击SDK九宫格
+    onClickJiuGongGeBtn:function(){
+        console.log("点击九宫格按钮")
+        AladinSDK.ShowDrawer()
+        AladinSDK.GetDrawerNode().x = this.node.width/2;
+        AladinSDK.GetDrawerNode().y = this.node.height/2;
+
+    },
+
+    // 点击SDK猜你爱玩
+    onClickCaiNiAiWanBtn:function(){
+        console.log("点击猜你爱玩按钮")
+        AladinSDK.showFavoNode()
+
+    },
+});

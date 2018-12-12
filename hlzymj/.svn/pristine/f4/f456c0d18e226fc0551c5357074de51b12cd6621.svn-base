@@ -1,0 +1,15 @@
+
+cc.Class({
+    extends: cc.Component,
+    properties: {
+        
+    },
+
+    onLoad:function() {
+        this.scheduleOnce(function(){
+            cc.director.loadScene('LoginScene');
+
+        },1)
+    }
+
+});
