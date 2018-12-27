@@ -1,0 +1,36 @@
+var FakeBg = cc.Class({
+    extends: cc.Component,
+
+    properties: {
+        loadingNode:{
+            default: null,
+            type: cc.Node,
+        },
+        loadingProgress:{
+            default: null,
+            type: cc.Label,
+        },
+    },
+
+    // LIFE-CYCLE CALLBACKS:
+
+    onLoad: function () {
+
+        this.addHallSceneResources();
+        
+    },
+
+    addHallSceneResources:function(){
+        var self = this;
+        this.loadingNode.active = true; 
+        cc.loader.loadResDir("texture", function (completedCount, totalCount, item) {
+            self.loadingProgress.string = "加载游戏资源:"+ (parseInt(completedCount/totalCount*100)) +"%" ;
+        }, 
+        function (err, assets) {
+            console.log("加载完成大厅内的资源");
+            self.loadingNode.active = false; 
+            cc.director.loadScene('HallPlatformScene', function(){
+            });
+        });
+    },
+});

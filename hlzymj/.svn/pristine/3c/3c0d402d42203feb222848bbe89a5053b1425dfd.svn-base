@@ -1,0 +1,141 @@
+import {Domain} from "../hall/Domain";
+import {WeixinManager} from "../hall/weixin/WeixinManager";
+import { TSCommon } from "../hall/TSCommon";
+var HallResources = require('HallResources');
+var AladinSDK = require("../aladinSDK");
+cc.Class({
+    extends: cc.Component,
+    m_onWxGameLoginCallBack:null,
+    properties: {
+        gameBoxNode:{
+            default: null,
+            type: cc.Node,
+        },
+        loadingLabel:{
+            default: null,
+            type: cc.Label,
+        },
+    },
+    onLoad:function() {
+        var self = this;
+        var frameRate = 35;
+        cc.game.setFrameRate(frameRate); //游戏限帧
+        if(cc.sys.browserType == "mqqbrowser" || "wechatgame" == cc.sys.browserType){
+            wx.setPreferredFramesPerSecond(frameRate);//游戏限帧
+            //上报aladinSDK需要的相应参数
+            AladinSDK.reportWithAppId(Domain.WEIXIN_APPID, AladinSDK.ReportTypes.LOGIN, null);
+
+            AladinSDK.init(Domain.WEIXIN_APPID, '1.0.0',{
+                
+                    //广点通相关
+                    // gdt_left:100, //可选
+                    // gdt_top:100, //可选
+                    // gdt_right:100, //可选
+                    // gdt_bottom:100, //可选
+                    // gdt_widht:300, //可选
+                    // // 猜你喜欢，更多好玩列表主题，有蓝色(AladinSDK.Theme.BLUE)、黄色(AladinSDK.Theme.YELLOW)、自定
+                    // 义皮肤(AladinSDK.Theme.CUSTOM)，自定义皮肤必须穿themeurl参数
+                    // theme : AladinSDK.Theme.BLUE, //可选，默认为蓝色,
+                    // themeurl : 'https://ad-static.boomegg.cn/imgs/sdks/sprite_yh.png', //可选，自定义皮肤图片地
+                    // 址，具体自定义文档请参考后面自定义皮肤文档
+                    // }
+                    // //广点通宽度默认为300 底部居中 同时传递 gdt_top gdt_bottom 按 gdt_top ， gdt_right gdt_left 按
+                    // gdt_left
+                    Orientation:AladinSDK.Orientation.landscape,
+                    themeurl :HallResources.sdkImgUrl,
+            },function(){
+
+                
+            });
+            // if(require("HallUtils").isIPhoneX()){
+            //     this.jiuGongGeSwitchNode.x = 1540;
+            // }else{
+            //     this.jiuGongGeSwitchNode.x = 1252;
+            // }
+            // cc.game.addPersistRootNode(this.jiuGongGeSwitchNode);
+
+            cc.game.addPersistRootNode(this.gameBoxNode);
+
+
+        }
+
+        TSCommon.log("LoginButtonMenu.onLoad");
+        if(!cc.sys.isNative && require("HallUtils").judeIsPhoneWXGameBrowser())    //在微信小游戏的环境
+        {
+            var onWxGameLoginCallBack = function()
+            {
+                var weixinUserInfo = WeixinManager.getInstance().userInfo;
+                if(!weixinUserInfo)
+                    return;
+                require('HallControl').getInstance().loginByIMEI(weixinUserInfo.openid,weixinUserInfo.nickName,weixinUserInfo.avatarUrl,Domain.WEIXIN_APPID,weixinUserInfo.openid);
+            }
+            this.m_onWxGameLoginCallBack = onWxGameLoginCallBack;
+            TSCommon.addEvent(TSCommon.onGeWXtUserInfoLogin, onWxGameLoginCallBack,this);
+
+            WeixinManager.getInstance().checkLogin(false);
+            var weixinUserInfo = WeixinManager.getInstance().userInfo;
+            if(!weixinUserInfo)
+                return;
+
+            require('HallControl').getInstance().loginByIMEI(weixinUserInfo.unionid,weixinUserInfo.nickname,weixinUserInfo.avatarUrl,"","");
+        }
+        else{
+
+            
+            var imei = null;
+            // var imei = "AfneS1YkaPCAf4zOMqtLhcPGIUm45"+cc.sys.localStorage.getItem("imei");
+            // var imei = "ofneS1YkaPCAf3zOMqtLhcPGIUm45BBBBBB"//cc.sys.localStorage.getItem("imei");
+            if(!imei){
+                var lastNumber = "";
+                for(var i = 0; i < 6; i++){
+                    lastNumber += Math.floor(Math.random() * 10)
+                }
+
+                imei = "ofneS1YkaPCAf3zOMqtLhcPGIUm45"
+                imei += lastNumber;
+                cc.sys.localStorage.setItem("imei", imei);
+            }
+            require('HallControl').getInstance().loginByIMEI(imei,"游客","","","");
+        }
+
+        var scheduler = cc.director.getScheduler();
+        scheduler.unscheduleCallbackForTarget(this, this._signalUpdate)
+
+        this.useTime = 1;
+        var update = function (dt) {
+            if (self.useTime > 3)
+                self.useTime = 1;
+            var showStr = "";
+            if(self.useTime == 1)
+                showStr =  "正在登陆。";
+            else if(self.useTime == 2)
+                showStr =  "正在登陆。。";
+            else if(self.useTime == 3)
+                showStr =  "正在登陆。。。";
+            self.loadingLabel.string = showStr;
+            self.useTime = self.useTime + 1;
+        }
+
+        this._signalUpdate = update;
+
+        scheduler.scheduleCallbackForTarget(this, update, 0.2, cc.macro.REPEAT_FOREVER, 0, false);
+
+        
+        TSCommon.addEvent(HallResources.changeLoadingShow, this.onLoginSuccessCallback,this);
+    },
+
+    onLoginSuccessCallback :function()
+    {
+        var scheduler = cc.director.getScheduler();
+        scheduler.unscheduleCallbackForTarget(this, this._signalUpdate);
+        this.loadingLabel.string = "登陆成功";
+    },
+
+    onDestroy: function () {
+
+        var scheduler = cc.director.getScheduler();
+
+        scheduler.unscheduleCallbackForTarget(this, this._signalUpdate);
+        TSCommon.removeEvent(HallResources.changeLoadingShow, this.onLoginSuccessCallback,this);
+    },
+});

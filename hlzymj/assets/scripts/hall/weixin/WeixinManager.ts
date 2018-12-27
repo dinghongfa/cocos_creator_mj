@@ -370,7 +370,7 @@ export class WeixinManager {
     {
     this.getDrviceData();
        var self = this;
-    //    AladinSDK.report(AladinSDK.ReportTypes.LOGIN,'')
+       AladinSDK.report(AladinSDK.ReportTypes.LOGIN,'')
         wx.login({
             success: function (res) {
                 AladinSDK.report(AladinSDK.ReportTypes.AUTH,'')
